@@ -33,3 +33,33 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
+
+from wagtail.models import Page
+from wagtail.fields import RichTextField
+from wagtail.admin.panels import FieldPanel
+from wagtail.search import index
+
+class HomePage(Page):
+    intro = RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('intro')
+    ]
+
+class BlogPage(Page):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField("Post date")
+    intro = models.CharField(max_length=250)
+    text = RichTextField(blank=True)
+
+    search_fields = Page.search_fields + [
+        index.SearchField('intro'),
+        index.SearchField('text'),
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('author'),
+        FieldPanel('date'),
+        FieldPanel('intro'),
+        FieldPanel('text'),
+    ]
